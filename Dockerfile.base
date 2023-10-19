@@ -1,0 +1,51 @@
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND noninteractive
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
+ENV FORCE_CUDA="1"
+
+# Set working directory
+WORKDIR /dev_ws
+
+# Install debian packages
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    wget \
+    build-essential \
+    gcc \
+    make \
+    cmake \
+    htop \
+    vim \
+    nano \
+    python3-pip \
+    python-is-python3 \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    git \
+    ninja-build \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender-dev \
+    libxext6
+
+# Copy MapTR to image
+COPY . /dev_ws
+
+# Install PyTorch and torchvision
+RUN pip install torch==1.9.1+cu111 \
+    torchvision==0.10.1+cu111 \
+    torchaudio==0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
+
+# Install mmcv-full
+RUN pip install mmcv-full==1.4.0 -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.9.0/index.html
+
+# Install mmdet and mmseg
+RUN pip install mmdet==2.14.0
+RUN pip install mmsegmentation==0.14.1
+
+# Install timm
+RUN pip install timm
